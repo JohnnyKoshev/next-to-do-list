@@ -2,26 +2,124 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+.columns-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 3rem;
+    min-height: 100vh;
+    width: 100%;
+    padding: 1.5rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+.column-header{
+    height: max-content;
+    width: max-content;
+    padding: 0.5em;
+    display: flex;
+    align-items: center;
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+.column-container{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    width: 20vw;
+    min-height: 100%;
+}
+
+.dot-style{
+    width: 20px;
+    height: 20px;
+    border-radius: 100px;
+    background-color: red;
+    margin-right: 0.5em;
+}
+
+.task-column-style{
+    height: 0.9vw;
+    line-height: 0.9vw;
+    font-size: 0.9vw;
+}
+
+.task-desc-style{
+    height: 1vw;
+    line-height: 1vw;
+    font-size: 1vw;
+}
+
+.column-text-style{
+    height: 1.3vw;
+    line-height: 1.3vw;
+    font-size: 1.3vw;
+}
+
+.task-container{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1em;
+    gap: 1em;
+    width: 100%;
+    cursor: move;
+}
+
+.tasks-list-container{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2em;
+    width: 100%;
+}
+
+.add-btn{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2em;
+    width: 100%;
+    padding-left: 1em;
+    opacity: 50%;
+    transition: 500ms opacity;
+}
+
+.add-text-btn{
+    height: 1.2vw;
+    line-height: 1.2vw;
+    font-size: 1.2vw;
+}
+
+.add-plus-btn{
+    border: 1px dotted white;
+    width: 3px;
+    height: 3px;
+    background-color: black;
+    box-sizing: border-box;
+    transform: scale(9);
+}
+
+.add-btn:hover{
+    cursor: pointer;
+    opacity: 100%;
+}
+
+.task-del-btn{
+    cursor: pointer;
+    width: 10%;
+}
+
+.task-header{
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.task-text-style{
+    width: 90%;
+}
+
+.task-input{
+    width: 100%
 }
