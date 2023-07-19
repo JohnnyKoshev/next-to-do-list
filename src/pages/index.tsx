@@ -14,7 +14,7 @@ function ColumnHeader({columnName, colors, opacityRate, textStyle}) {
     )
 }
 
-function Task({columnName, colors, task, setTaskContainerRef, setDraggableTask, columnStatus}) {
+function Task({columnName, colors, task, setTaskContainerRef, setTaskFromChild, columnStatus}) {
     let taskContainer: EventTarget & HTMLDivElement;
     const taskDelBtn = useRef(null);
     const {tasks, setTasks} = useContext(TasksContext);
@@ -43,8 +43,8 @@ function Task({columnName, colors, task, setTaskContainerRef, setDraggableTask, 
                  e.dataTransfer.setData('text/html', e.currentTarget.outerHTML);
                  console.log(e.currentTarget.outerHTML);
                  taskContainer = e.currentTarget;
-                 setTaskContainerRef(taskContainer);
-                 setDraggableTask(task);
+                 // setTaskContainerRef(taskContainer);
+                 setTaskFromChild(task);
              }}
              onDragEnd={(e) => {
                  e.currentTarget.style.opacity = '1';
@@ -58,7 +58,7 @@ function Task({columnName, colors, task, setTaskContainerRef, setDraggableTask, 
              onMouseLeave={() => {
                  taskDelBtn.current.classList.add('hidden');
              }}
-        >
+           >
             <div className={"task-header"}>
                 <span className={"task-text-style"}>
                     <input type="text" defaultValue={`${task.title}`}
@@ -79,6 +79,9 @@ function Column({columnName, colors, status}) {
     const [taskContainerRef, setTaskContainerRef] = useState<EventTarget & HTMLDivElement>();
     const [draggableTask, setDraggableTask] = useState();
 
+    const setTaskFromChild = (element) => {
+        setDraggableTask(element)
+    };
     const onTaskCreate = () => {
         const newTask: TaskInterface = {
             id: nanoid(),
@@ -87,34 +90,36 @@ function Column({columnName, colors, status}) {
             createdAt: `${Date.now()}`
         }
         setTasks!([...tasks, newTask]);
-        return <Task columnName={columnName} colors={colors} task={newTask}/>
+        return <Task columnName={columnName} colors={colors} task={newTask}
+                     setTaskContainerRef={setTaskContainerRef}
+                     setTaskFromChild={setTaskFromChild} columnStatus={status} draggableTask={draggableTask}/>
     }
 
     return (
-        <div className={"column-container"}>
+        <div className={"column-container"} onClick={() => {
+            console.log(draggableTask)
+        }}>
             <ColumnHeader columnName={columnName} colors={colors} opacityRate={"opacity-100"}
                           textStyle={"column-text-style"}/>
             <div className={"tasks-list-container"} onDrop={(e) => {
                 e.stopPropagation();
                 console.log('check1');
-                // if (draggableTask.status !== status) {
-                if (!taskContainerRef || !draggableTask) return
-                let draggableElement: Element | null = document.createElement('div');
-                draggableElement.innerHTML = e.dataTransfer.getData('text/html');
-                draggableElement = draggableElement.children[0];
-                console.log(draggableElement);
-                (draggableElement as HTMLDivElement).style.opacity = '1';
-                console.log(e.dataTransfer.getData('text/html'));
-                e.currentTarget.outerHTML = e.currentTarget.outerHTML + draggableElement?.outerHTML;
-                for (let element of tasks) {
-                    if (element.id === draggableTask.id) {
-                        element.status = status;
+                if (draggableTask.status !== status) {
+                    if (!taskContainerRef || !draggableTask) return
+                    // e.currentTarget.outerHTML = e.currentTarget.outerHTML + draggableElement?.outerHTML;
+                    for (let element of tasks) {
+                        if (element.id === draggableTask.id) {
+                            element.status = status;
+                        }
                     }
+                    setTasks!(tasks);
+                    console.log(tasks);
+                    return <Task columnName={columnName} colors={colors} task={draggableTask}
+                                 setTaskContainerRef={setTaskContainerRef}
+                                 setDraggableTask={(element) => {
+                                     setDraggableTask(element)
+                                 }} columnStatus={status} draggableTask={draggableTask}/>;
                 }
-                setTasks!(tasks);
-                console.log(tasks);
-                // }
-                return false;
             }}
                  onDragOver={(e) => {
                      e.preventDefault();
@@ -126,7 +131,7 @@ function Column({columnName, colors, status}) {
                         if (task.status === status)
                             return <Task key={task.id} columnName={columnName} colors={colors} task={task}
                                          setTaskContainerRef={setTaskContainerRef}
-                                         setDraggableTask={setDraggableTask} columnStatus={status}/>
+                                         setTaskFromChild={setTaskFromChild} columnStatus={status}/>
                     })
                 }
 
